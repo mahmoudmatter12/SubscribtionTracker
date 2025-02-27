@@ -1,0 +1,2 @@
+npx express-generator --no-view ./ -> to create a express env
+npm i --save-dev nodemon => to make the application knows what is the changes that i did 
