@@ -7,4 +7,4 @@ config(
 // console.log(`Environment: ${process.env.NODE_ENV}`);
 // console.log(`Port: ${process.env.PORT}`);
 
-export const { PORT , NODE_ENV  } = process.env;
+export const { PORT , NODE_ENV ,DB_URI  } = process.env;

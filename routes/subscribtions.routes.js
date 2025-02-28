@@ -28,4 +28,16 @@ subscribtionsRouter.delete("/:id", (req, res) => {
     });
 });
 
+subscribtionsRouter.get("/user/:id", (req, res) => {
+    res.send({ title: "Get all subscribtions for a user" });
+});
+
+subscribtionsRouter.put("/:id/cancel", (req, res) => {
+    res.send({ title: "Cancel subscribtion" });
+});
+
+subscribtionsRouter.get("/upcomming-renewals", (req, res) => {
+    res.send({ title: "Get all upcomming renewals" });
+});
+
 export default subscribtionsRouter;
