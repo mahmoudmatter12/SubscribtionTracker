@@ -131,3 +131,6 @@ subscribtionSchema.pre("save", async function (next) {
 
 // Creating a model for the subscribtions
 const Subscribtion = mongoose.model("Subscribtion", subscribtionSchema);
+
+// Exporting the Subscribtion model
+export default Subscribtion;
