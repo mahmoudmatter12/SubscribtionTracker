@@ -40,16 +40,11 @@ export const signUp = async (req, res, next) => {
         // Take the params from the request body
         const { name, email, password } = req.body;
 
-        // Check if the user already exists
-        try {
-            const existingUser = await User.findOne({ email });
-            if (existingUser) {
-                const error = new Error('User already exists');
-                error.statusCode = 409;
-                throw error;
-            }
-        } catch (err) {
-            throw new Error('Error checking for existing user');
+        const existingUser = await User.findOne({ email })
+        if (existingUser) {
+            const error = new Error('User already exists');
+            error.statusCode = 409;
+            throw error;
         }
 
         // Hash the password
@@ -77,14 +72,19 @@ export const signUp = async (req, res, next) => {
         });
 
     } catch (error) {
+        next(error);
         await session.abortTransaction();
         session.endSession();
-        next(error);
     }
 };
 
 export const signIn = async (req, res, next) => {
+    try{
 
+    }catch(error){
+        next(error);
+    }
+    
 };
 
 export const signOut = async (req, res, next) => {
