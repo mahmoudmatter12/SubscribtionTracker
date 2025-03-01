@@ -21,8 +21,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, "Password is required"],
-        minLength: [8, "Password must be at least 8 characters long"],
-        maxLength: [50, "Password must be at most 50 characters long"],
+        minLength: [8, "Password must be at least 8 characters long"]
     }
 }, { timestamps: true });
 // timestamps: true adds createdAt and updatedAt fields to the schema
