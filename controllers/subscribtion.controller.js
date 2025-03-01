@@ -24,6 +24,9 @@ export const getSubscribtions = async (req, res, next) => {
 
 export const getSubscribtionsForUser = async (req, res, next) => {
     try {
+        if(req.user._id.toString() !== req.params.id) {
+            return res.status(401).json({ success: false, message: "You are not authorized to access this resource" });
+        }
         const subscriptions = await Subscribtion.find({ userId: req.params.id });
         res.status(200).json({ success: true, data: { subscriptions } });
     } catch (e) {

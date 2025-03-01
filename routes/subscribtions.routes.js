@@ -11,7 +11,7 @@ subscribtionsRouter.get("/", authorize, getSubscribtions);
 subscribtionsRouter.post("/", authorize, createSubscribtion);
 
 // get Subscribtions for a specific user
-subscribtionsRouter.get("/user/:id", getSubscribtionsForUser);
+subscribtionsRouter.get("/user/:id",authorize, getSubscribtionsForUser);
 
 
 subscribtionsRouter.put("/:id", (req, res) => {
