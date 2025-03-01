@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET,JWT_EXPIRE_IN} from "../config/env.js";
+import { JWT_SECRET, JWT_EXPIRE_IN } from "../config/env.js";
 
 /**
  * @module controllers/auth.controller
@@ -55,7 +55,7 @@ export const signUp = async (req, res, next) => {
         const newUsers = await User.create([{ name, email, password: hashedPassword }], { session });
 
         // Token generation
-        const token = jwt.sign({email:newUsers[0].email,userId: newUsers[0]._id }, JWT_SECRET, { expiresIn: JWT_EXPIRE_IN });
+        const token = jwt.sign({ email: newUsers[0].email, userId: newUsers[0]._id }, JWT_SECRET, { expiresIn: JWT_EXPIRE_IN });
 
 
         // Save the user to the database
@@ -79,12 +79,52 @@ export const signUp = async (req, res, next) => {
 };
 
 export const signIn = async (req, res, next) => {
-    try{
+    try {
 
-    }catch(error){
+        // Logic here is to sign in the user with the email and password provided in the request body.
+        // First, we check if the user exists in the database.
+        // If the user does not exist, we return a 400 status code with a message "User not found".
+        // If the user exists, we compare the password provided in the request body with the hashed password in the database.
+        // If the passwords match, we generate a token using the jwt library and send it back to the client.
+        // If the passwords do not match, we return a 401 status code with a message "Invalid credentials".
+
+        // Take the params from the request body
+        const { email, password } = req.body;
+
+        // Find the user
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            const error = new Error('User not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // Compare the password
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            const error = new Error('Invalid credentials');
+            error.statusCode = 401;
+            throw error;
+        }
+
+        // Token generation
+        const token = jwt.sign({ email: user.email, userId: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRE_IN });
+
+        // Send a response back to the client
+        res.status(200).json({
+            message: "User signed in successfully", success: true,
+            data: {
+                token,
+                user
+            }
+        });
+
+    } catch (error) {
         next(error);
     }
-    
+
 };
 
 export const signOut = async (req, res, next) => {

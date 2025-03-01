@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { signUp } from "../controllers/auth.controller.js";
+import { signUp,signIn } from "../controllers/auth.controller.js";
 
 const authRouter = Router();
 
@@ -7,9 +7,9 @@ const authRouter = Router();
 //   res.send({ title: "Register route" });
 // });
 
-authRouter.post("/sign-in", (req, res) => {
-  res.send({ title: "Login route" });
-});
+// authRouter.post("/sign-in", (req, res) => {
+//   res.send({ title: "Login route" });
+// });
 
 authRouter.post("/sign-out", (req, res) => {
   res.send({ title: "Logout route" });
@@ -21,7 +21,7 @@ authRouter.post("/sign-out", (req, res) => {
 // and also we can use the same logic in different routes if we want to use it
 
 authRouter.post("/sign-up", signUp);
-// authRouter.post("/sign-in", signIn);
+authRouter.post("/sign-in", signIn);
 // authRouter.post("/sign-out", signOut);
 
 
