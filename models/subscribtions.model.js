@@ -1,11 +1,9 @@
-import mongoose from "mongoose";    // Importing mongoose
-import { DB_URI } from "../config/env.js";    // Importing DB_URI from env.js
+import mongoose from "mongoose";
 
-// Creating a schema for the subscribtions
 const subscribtionSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, "Subscibtion Name is required"],
+        required: [true, "Subscription Name is required"],
         trim: true,
         minLength: [3, "Name must be at least 3 characters long"],
         maxLength: [50, "Name must be at most 50 characters long"],
@@ -19,10 +17,15 @@ const subscribtionSchema = new mongoose.Schema({
     startDate: {
         type: Date,
         required: [true, "Start date is required"],
+        validate: {
+            validator: function (value) {
+                return value <= new Date();
+            },
+            message: "Start date must be less than or equal to the current date",
+        },
     },
     endDate: {
         type: Date,
-        required: [true, "End date is required"],
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -35,14 +38,15 @@ const subscribtionSchema = new mongoose.Schema({
         trim: true,
         enum: ["USD", "EUR", "EGP"],
         default: "USD",
-        frequency: {
-            type: String,
-            enum: ["monthly", "yearly","daily"],
-        },
     },
-    catagory: {
+    frequency: {
         type: String,
-        required: [true, "Catagory is required"],
+        required: [true, "Frequency is required"],
+        enum: ["monthly", "yearly", "daily"],
+    },
+    category: {
+        type: String,
+        required: [true, "Category is required"],
         enum: ["Entertainment", "Education", "Health", "Food", "Other"],
     },
     status: {
@@ -60,77 +64,48 @@ const subscribtionSchema = new mongoose.Schema({
     },
     paymentDate: {
         type: Date,
-        required: [true, "Payment date is required"],
     },
-    startDate: {
+    renewalDate: {
         type: Date,
-        required: [true, "Start date is required"],
-        validator: (value) => { value <= new Date();},
-        message: "Start date must be less than or equal to the current date",
-    },
-    renwalDate: {
-        type: Date,
-        validator: function (value)  {
-            return value >= this.startDate;
+        validate: {
+            validator: function (value) {
+                return value >= this.startDate;
+            },
+            message: "Renewal date must be greater than or equal to the start date",
         },
-        message: "Renwal date must be greater than or equal to the start date",
     },
-    user:
-    {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: [true, "User ID is required"],
-        index: true,
-    }
 }, { timestamps: true });
-// timestamps: true adds createdAt and updatedAt fields to the schema
 
-// Adding a pre-save middleware to check if the user exists
-// before saving the subscribtion's data
-// This middleware will run before the save() function
-// and will check if the user exists in the database
-// If the user does not exist, an error will be thrown  
+// Pre-save middleware to check if the user exists
 subscribtionSchema.pre("save", async function (next) {
-    const user = await User.findById(this.userId);
+    const user = await mongoose.model("User").findById(this.userId);
     if (!user) {
         throw new Error("User not found");
     }
     next();
 });
 
-// Adding a pre-save middleware to check if the start date
-// is less than or equal to the current date
-// This middleware will run before the save() function
-// and will check if the start date is less than or equal to the current date
-// If the start date is greater than the current date, an error will be thrown
-subscribtionSchema.pre("save", async function (next) {
+// Pre-save middleware to set endDate if status is "Cancelled"
+subscribtionSchema.pre("save", function (next) {
     if (this.isModified("status") && this.status === "Cancelled") {
         this.endDate = new Date();
     }
     next();
 });
 
-// auto caculate the renwal date
-subscribtionSchema.pre("save", async function (next) {
-    if (this.renwalDate){
-        const renewalPeriod ={
+// Pre-save middleware to calculate renewalDate
+subscribtionSchema.pre("save", function (next) {
+    if (this.frequency && this.startDate) {
+        const renewalPeriod = {
             monthly: 30,
             yearly: 365,
             daily: 1,
-        }
-        this.renwalDate = new Date();
-        this.renwalDate.setdate(this.renwalDate.getDate() + renewalPeriod[this.frequency]);
-    }
-    if (this.renwalDate < new Date()){
-        this.status = "Expired";
+        };
+        this.renewalDate = new Date(this.startDate);
+        this.renewalDate.setDate(this.renewalDate.getDate() + renewalPeriod[this.frequency]);
     }
     next();
-    // next() is a function that runs the next middleware in the middleware stack
 });
 
-
-// Creating a model for the subscribtions
 const Subscribtion = mongoose.model("Subscribtion", subscribtionSchema);
-
-// Exporting the Subscribtion model
 export default Subscribtion;
