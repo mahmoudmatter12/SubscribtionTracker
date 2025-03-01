@@ -7,4 +7,11 @@ config(
 // console.log(`Environment: ${process.env.NODE_ENV}`);
 // console.log(`Port: ${process.env.PORT}`);
 
-export const { PORT , NODE_ENV ,DB_URI ,JWT_EXPIRE_IN,JWT_SECRET } = process.env;
+export const { PORT,
+    NODE_ENV,
+    DB_URI,
+    JWT_EXPIRE_IN,
+    JWT_SECRET,
+    ARCJET_KEY,
+    ARCJET_ENV
+} = process.env;

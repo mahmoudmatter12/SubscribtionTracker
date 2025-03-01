@@ -6,6 +6,7 @@ import userRouter from './routes/user.routes.js';
 import ConnectToDatabase from './database/mangodb.js';
 import errorMiddleware from './middleware/error.middleware.js';
 import cookieParser from 'cookie-parser';
+import arcjectMiddleware from './middleware/arcject.middleware.js';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(errorMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(arcjectMiddleware);
 
 
 app.use('/auth', authRouter);
