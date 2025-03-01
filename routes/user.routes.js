@@ -1,14 +1,20 @@
 import { Router } from "express";
+import { getUser , getUsers} from "../controllers/user.controller.js";
+
 
 const userRouter = Router();
 
-userRouter.get("/users", (req, res) => {
-    res.send({ title: "Get all user" });
-});
+// userRouter.get("/users", (req, res) => {
+//     res.send({ title: "Get all user" });
+// });
 
-userRouter.get("/:id", (req, res) => {
-    res.send({ title: "Get user detiels" });
-});
+// userRouter.get("/:id", (req, res) => {
+//     res.send({ title: "Get user detiels" });
+// });
+
+userRouter.get("/", getUsers);
+userRouter.get("/:id", getUser);
+
 
 userRouter.post("/", (req, res) => {
     res.send({
