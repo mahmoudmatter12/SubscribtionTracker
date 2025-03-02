@@ -57,7 +57,7 @@ export const createUser = async (req, res, next) => {
 
         // Create a new user
         // if there is any error then the user will not be created and the transaction will be aborted and we passed the session  
-        const newUsers = await User.create([{ name, email, password: hashedPassword }],{ session });
+        const newUsers = await User.create([{ name, email, password: hashedPassword }], { session });
 
         // Token generation
         const token = jwt.sign({ email: newUsers[0].email, userId: newUsers[0]._id }, JWT_SECRET, { expiresIn: JWT_EXPIRE_IN });
@@ -87,6 +87,45 @@ export const createUser = async (req, res, next) => {
         });
     }
     catch (error) {
+        next(error);
+    }
+};
+
+export const updateUser = async (req, res, next) => {
+    try {
+        const userId = req.params.id;
+        const { name, email } = req.body;
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            const error = new Error("User not found");
+            error.status = 404;
+            throw error;
+        }
+
+        const existingUser = await User.findOne({
+            email,
+            _id: { $ne: userId },
+        });
+
+        if (existingUser) {
+            const error = new Error("User already exists with this email");
+            error.status = 409;
+            throw error;
+        }
+
+        user.name = name;
+        user.email = email;
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            data: user,
+        });
+
+    } catch (error) {
         next(error);
     }
 };
