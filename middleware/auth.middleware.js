@@ -6,26 +6,40 @@ export const authorize = async (req, res, next) => {
     try {
         let token;
 
+        // Check for token in headers
         if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
             token = req.headers.authorization.split(' ')[1];
         }
-        // verify token
+
+        // Check for token in cookies
+        if (!token && req.cookies.token) {
+            token = req.cookies.token;
+        }
+
+        // If no token is found
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized, token missing' });
+        }
+
+        // Verify token
         const decoded = jwt.verify(token, JWT_SECRET);
 
+        // Find the user
         const user = await User.findById(decoded.userId);
 
-        if (!user) return res.status(401).json({ message: 'Unauthorized here' });
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized, user not found' });
+        }
 
-
+        // Attach the user to the request object
         req.user = user;
 
+        // Proceed to the next middleware/route handler
         next();
-
     } catch (err) {
+        // Handle token verification errors and other exceptions
         res.status(401).json({ message: 'Unauthorized', error: err.message });
     }
-}
+};
 
-
-// to test this middleware, we need to add it to the userRouter.get("/:id", authorize,getUser); route in routes/user.routes.js
-// and then test the route with the token in the header.
+export default authorize;

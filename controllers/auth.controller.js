@@ -63,6 +63,16 @@ export const signUp = async (req, res, next) => {
         await session.commitTransaction();
         session.endSession();
 
+        const experInJwt = parseInt(JWT_EXPIRE_IN, 10);
+
+        // set the cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: experInJwt * 1000
+        });
+
         // Send a response back to the client
         res.status(201).json({
             message: "User created successfully", success: true, data: {
@@ -112,6 +122,16 @@ export const signIn = async (req, res, next) => {
         // Token generation
         const token = jwt.sign({ email: user.email, userId: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRE_IN });
 
+        const experInJwt = parseInt(JWT_EXPIRE_IN, 10);
+
+        // set the cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: experInJwt * 1000
+        });
+
         // Send a response back to the client
         res.status(200).json({
             message: "User signed in successfully", success: true,
@@ -124,10 +144,23 @@ export const signIn = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-
 };
 
 export const signOut = async (req, res, next) => {
+    try {
+        // Clear the token cookie
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
 
+        // Send a success response
+        res.status(200).json({
+            message: "User signed out successfully",
+            success: true,
+        });
+    } catch (error) {
+        next(error);
+    }
 };
-

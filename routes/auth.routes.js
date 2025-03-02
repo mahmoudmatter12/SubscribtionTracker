@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { signUp,signIn } from "../controllers/auth.controller.js";
+import { signUp, signIn, signOut } from "../controllers/auth.controller.js";
+import authorize from "../middleware/auth.middleware.js";
 
 const authRouter = Router();
 
@@ -11,9 +12,7 @@ const authRouter = Router();
 //   res.send({ title: "Login route" });
 // });
 
-authRouter.post("/sign-out", (req, res) => {
-  res.send({ title: "Logout route" });
-});
+authRouter.post("/sign-out", authorize, signOut);
 
 // here insted of making the logic in the same file we are using the controller file to make the logic
 // and we are just importing the logic here and using it in the routes
