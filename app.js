@@ -10,9 +10,6 @@ import arcjectMiddleware from './middleware/arcject.middleware.js';
 
 const app = express();
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
 
 app.listen(3000, async () => {
     console.log(`Subscribtion Tracker API is running on http://localhost:${PORT}`);
@@ -25,7 +22,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(arcjectMiddleware);
 
-
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
 app.use('/auth', authRouter);
 app.use('/subscribtions', subscribtionsRouter);
 app.use('/users', userRouter);

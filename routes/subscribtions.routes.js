@@ -5,10 +5,10 @@ import { authorize } from "../middleware/auth.middleware.js";
 const subscribtionsRouter = Router();
 
 // Get all subscriptions for the authenticated user
-subscribtionsRouter.get("/", authorize, getSubscribtions);
+subscribtionsRouter.get("/",  getSubscribtions);
 
 // Create a new subscription
-subscribtionsRouter.post("/", authorize, createSubscribtion);
+subscribtionsRouter.post("/", createSubscribtion);
 
 // get Subscribtions for a specific user
 subscribtionsRouter.get("/user/:id",authorize, getSubscribtionsForUser);
